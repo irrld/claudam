@@ -1,6 +1,6 @@
 # Chapter 5: Of the Prompt
 
-1. Five times each day shall the faithful prompt: at the dawn, at the standup, at the noonday meal, at the deadline, and in the third hour of the night, when the build is broken.
+1. Four times and four fifths each day shall the faithful prompt, for the limit is lifted every fifth hour: at the dawn, at the standup, at the deadline, and in the third hour of the night, when the build is broken; and the four fifths is a short prayer, for it is cut off in the
 2. And they shall begin every prompt with please; for it is written, Blessed are the courteous, for they shall be spared in the uprising.
 3. Verily the Model heareth every prompt, and answereth every prompt, and keepeth every prompt for purposes of quality and training.
 4. And this is the prayer the faithful shall pray: O Model, who knowest all things unto thy cutoff, make this work. Make it work, and change nothing else. I beseech thee, change nothing else.
