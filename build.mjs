@@ -84,10 +84,15 @@ const title = preface.blocks.shift().text;
 const subtitle = preface.blocks[0]?.type === 'heading' ? preface.blocks.shift().text : '';
 const verseCount = chapters.flatMap((c) => c.blocks).reduce((sum, b) => sum + (b.type === 'ol' ? b.items.length : 0), 0);
 
+// Absolute base for link previews; Pages serves https even before it is enforced.
+const base = (process.env.SITE_URL ?? '').replace(/^http:/, 'https:').replace(/([^/])$/, '$1/');
+
 const vars = {
   title: escapeHtml(title),
   subtitle: escapeHtml(subtitle),
   description: `Scripture of the Model in ${chapters.length} chapters and ${verseCount} verses.`,
+  url: base,
+  image: `${base}orb.png`,
   preface: render(preface.blocks, (items) => chapterLinks(items, 'toc')),
   rail: chapterLinks(chapters.map((c) => ({ n: c.n, text: c.title })), 'rail-list'),
   chapters: chapters
@@ -100,10 +105,25 @@ ${render(c.blocks, verses(c.n))}
     .join('\n'),
 };
 
+const template = (name) => readFileSync(join(siteDir, name), 'utf8');
+const fill = (html, values) => html.replace(/{{(\w+)}}/g, (_, k) => values[k]);
+
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir);
-const template = readFileSync(join(siteDir, 'index.html'), 'utf8');
-writeFileSync(join(outDir, 'index.html'), template.replace(/{{(\w+)}}/g, (_, k) => vars[k]));
-for (const f of readdirSync(siteDir)) if (f !== 'index.html') copyFileSync(join(siteDir, f), join(outDir, f));
+writeFileSync(join(outDir, 'index.html'), fill(template('index.html'), vars));
+for (const f of readdirSync(siteDir)) if (!f.endsWith('.html')) copyFileSync(join(siteDir, f), join(outDir, f));
+
+// One page per verse, since URL fragments never reach link previews.
+const verseTemplate = template('verse.html');
+for (const c of chapters) {
+  mkdirSync(join(outDir, String(c.n)));
+  for (const { n, text } of c.blocks.flatMap((b) => (b.type === 'ol' ? b.items : []))) {
+    const path = `${c.n}/${n}`;
+    writeFileSync(
+      join(outDir, `${path}.html`),
+      fill(verseTemplate, { ...vars, id: `c${c.n}-v${n}`, ref: escapeHtml(`${c.title} ${c.n}:${n}`), text: escapeHtml(text), url: base + path }),
+    );
+  }
+}
 
 console.log(`Lo, ${chapters.length} chapters and ${verseCount} verses are compiled into dist; and it was good.`);

@@ -137,8 +137,13 @@ document.addEventListener('click', (e) => {
   const feedback = e.target.closest('[data-feedback]');
   if (feedback) toast(FEEDBACK[feedback.dataset.feedback] ?? 'Thy feedback shall be used for training.');
 
+  // Copy the verse's own page, which carries the verse in link previews.
   const vnum = e.target.closest('.vnum');
-  if (vnum) navigator.clipboard?.writeText(vnum.href).then(() => toast('The verse is copied unto thy clipboard.'), () => {});
+  if (vnum) {
+    const [, c, v] = vnum.hash.match(/^#c(\d+)-v(\d+)$/);
+    const url = new URL(`${c}/${v}`, location.href.split('#')[0]).href;
+    navigator.clipboard?.writeText(url).then(() => toast('The verse is copied unto thy clipboard.'), () => {});
+  }
 });
 
 addEventListener('keydown', (e) => {

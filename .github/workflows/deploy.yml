@@ -22,7 +22,11 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: lts/*
+      - id: pages
+        uses: actions/configure-pages@v6
       - run: node build.mjs
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
